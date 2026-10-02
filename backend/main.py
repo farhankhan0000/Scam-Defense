@@ -2,7 +2,12 @@
 
 def symbol_obfuscation(url: str):
     if "@" in url:
-        print("the url is ignoring the given domain and treating it as a subdomain")
         return False
     return True
 
+def testing_url():
+    url = "https://www.google.com@hacker-domain.xyz/login"
+    if not symbol_obfuscation(url):
+        print("the url is ignoring the given domain and treating it as a subdomain")
+
+testing_url()
