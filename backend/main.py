@@ -1,15 +1,15 @@
 import tldextract
 import Levenshtein
 from urllib.parse import urlparse
+import ipaddress
 
 
 
-test_url = "https://paypa1.com/login"
+test_url = "http://192.168.1.50/bank/login.html"
 extracted_url = tldextract.extract(test_url)
 parsed_url = urlparse(test_url)
 
 
-print(parsed_url.scheme)
 
 
 HIGH_VALUE_TARGETS = [
@@ -24,6 +24,21 @@ HIGH_VALUE_TARGETS = [
     "netflix", "spotify", "roblox", "steam", "disney","booking", "airbnb", "uber", "lyft",
     "zoom", "slack", "salesforce"
 ]
+
+def ip_address_check(url: str):
+    hostname = urlparse(url).hostname
+
+    try:
+        ip_object = ipaddress.ip_address(hostname)
+
+        if ip_object.is_loopback:
+            return True
+
+        return False
+
+    except ValueError:
+        return True
+
 
 def homoglyph_check():
     safe_domain = extracted_url.domain.encode('idna').decode('utf-8')
@@ -71,5 +86,8 @@ def testing_url():
 
     if not typosquatting_check():
         print("the url is fake one")
+
+    if not ip_address_check(test_url):
+        print("the url has raw ip address therefore its a scam")
 
 testing_url()
