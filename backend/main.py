@@ -3,11 +3,30 @@ from urllib.parse import urlparse
 
 
 
-test_url = "https://www.google.com@hacker-domain.xyz/login"
+test_url = "https://apple.com.secure-login.xyz/login-page"
 extracted_url = tldextract.extract(test_url)
 parsed_url = urlparse(test_url)
 
 print(parsed_url.scheme)
+
+HIGH_VALUE_TARGETS = [
+    "microsoft", "google", "apple", "adobe", "dropbox",
+    "docusign", "we-transfer", "rackspace", "godaddy", "cisco",
+    "linkedin", "facebook", "instagram", "whatsapp", "twitter",
+    "discord", "telegram", "snapchat",
+    "amazon", "walmart", "ebay", "alibaba", "target",
+    "homedepot", "craigslist" ,"dhl", "fedex", "ups", "usps", "royalmail",
+    "paypal", "chase", "wellsfargo", "bankofamerica", "citibank",
+    "stripe", "square", "cashapp", "venmo", "americanexpress",
+    "netflix", "spotify", "roblox", "steam", "disney","booking", "airbnb", "uber", "lyft",
+    "zoom", "slack", "salesforce"
+]
+
+def subdomain_spoofing():
+    for brands_domain in HIGH_VALUE_TARGETS:
+        if brands_domain in extracted_url.subdomain:
+            return False
+    return True
 
 def protocol():
     if parsed_url.scheme == "http":
@@ -27,5 +46,8 @@ def testing_url():
 
     if not protocol():
         print("the url is not legitimate")
+
+    if not subdomain_spoofing():
+        print("the url is scam")
 
 testing_url()
