@@ -3,11 +3,11 @@ from urllib.parse import urlparse
 
 
 
-test_url = "https://apple.com.secure-login.xyz/login-page"
+test_url = "https://\u0430mazon.com/login-page"
 extracted_url = tldextract.extract(test_url)
 parsed_url = urlparse(test_url)
-
 print(parsed_url.scheme)
+
 
 HIGH_VALUE_TARGETS = [
     "microsoft", "google", "apple", "adobe", "dropbox",
@@ -21,6 +21,12 @@ HIGH_VALUE_TARGETS = [
     "netflix", "spotify", "roblox", "steam", "disney","booking", "airbnb", "uber", "lyft",
     "zoom", "slack", "salesforce"
 ]
+
+def homoglyph_check():
+    safe_domain = extracted_url.domain.encode('idna').decode('utf-8')
+    if safe_domain.startswith("xn--"):
+        return False
+    return True
 
 def subdomain_spoofing():
     for brands_domain in HIGH_VALUE_TARGETS:
@@ -49,5 +55,8 @@ def testing_url():
 
     if not subdomain_spoofing():
         print("the url is scam")
+
+    if not homoglyph_check():
+        print("the url is not using standard english")
 
 testing_url()
