@@ -33,7 +33,8 @@ def homoglyph_check():
 
 def typosquatting_check():
     for domain_name in HIGH_VALUE_TARGETS:
-        if Levenshtein.distance(extracted_url.domain, domain_name) is (1 or 2):
+        distance = Levenshtein.distance(extracted_url.domain, domain_name)
+        if distance in [1,2]:
             return False
     return True
 
