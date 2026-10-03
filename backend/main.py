@@ -1,11 +1,14 @@
 import tldextract
+import Levenshtein
 from urllib.parse import urlparse
 
 
 
-test_url = "https://\u0430mazon.com/login-page"
+test_url = "https://paypa1.com/login"
 extracted_url = tldextract.extract(test_url)
 parsed_url = urlparse(test_url)
+
+
 print(parsed_url.scheme)
 
 
@@ -26,6 +29,12 @@ def homoglyph_check():
     safe_domain = extracted_url.domain.encode('idna').decode('utf-8')
     if safe_domain.startswith("xn--"):
         return False
+    return True
+
+def typosquatting_check():
+    for domain_name in HIGH_VALUE_TARGETS:
+        if Levenshtein.distance(extracted_url.domain, domain_name) is (1 or 2):
+            return False
     return True
 
 def subdomain_spoofing():
@@ -58,5 +67,8 @@ def testing_url():
 
     if not homoglyph_check():
         print("the url is not using standard english")
+
+    if not typosquatting_check():
+        print("the url is fake one")
 
 testing_url()
