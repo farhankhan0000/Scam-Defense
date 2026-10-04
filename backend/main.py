@@ -5,11 +5,14 @@ import ipaddress
 
 
 
-test_url = "http://192.168.1.50/bank/login.html"
+test_url = "https://secure-account-verification-update-now.com/login"
 extracted_url = tldextract.extract(test_url)
 parsed_url = urlparse(test_url)
 
 
+
+
+CHEAP_EXTENSIONS = ["xyz", "top", "tk", "ml", "pw"]
 
 
 HIGH_VALUE_TARGETS = [
@@ -25,8 +28,16 @@ HIGH_VALUE_TARGETS = [
     "zoom", "slack", "salesforce"
 ]
 
-def ip_address_check(url: str):
-    hostname = urlparse(url).hostname
+def tlds_check(extracted_url: str):
+    suffix = extracted_url.suffix
+    for extensions in CHEAP_EXTENSIONS:
+        if suffix == extensions:
+            return False
+
+    return True
+
+def ip_address_check(test_url: str):
+    hostname = urlparse(test_url).hostname
 
     try:
         ip_object = ipaddress.ip_address(hostname)
@@ -89,5 +100,10 @@ def testing_url():
 
     if not ip_address_check(test_url):
         print("the url has raw ip address therefore its a scam")
+
+    if not tlds_check(extracted_url):
+        print("the url is a cheap one so its a scam")
+
+
 
 testing_url()
