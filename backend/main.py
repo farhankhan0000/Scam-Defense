@@ -28,6 +28,11 @@ HIGH_VALUE_TARGETS = [
     "zoom", "slack", "salesforce"
 ]
 
+def domain_hyphen_check(extracted_url: str):
+    if extracted_url.domain.count("-") > 2:
+        return False
+    return True
+
 def tlds_check(extracted_url: str):
     suffix = extracted_url.suffix
     for extensions in CHEAP_EXTENSIONS:
@@ -104,6 +109,7 @@ def testing_url():
     if not tlds_check(extracted_url):
         print("the url is a cheap one so its a scam")
 
-
+    if not domain_hyphen_check(extracted_url):
+        print("the domain contains alot of hyphen so its a scam")
 
 testing_url()
