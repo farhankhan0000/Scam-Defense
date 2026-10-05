@@ -2,6 +2,10 @@ import tldextract
 import Levenshtein
 from urllib.parse import urlparse
 import ipaddress
+from fastapi import FastAPI
+from pydantic import BaseModel
+
+app = FastAPI()
 
 
 
@@ -24,17 +28,26 @@ HIGH_VALUE_TARGETS = [
     "zoom", "slack", "salesforce"
 ]
 
-def domain_hyphen_check(extracted_url: str, current_score: int):
+class URLRequest(BaseModel):
+    test_url: str
+
+
+
+@app.post("/scam")
+def get_risk_score(request_data: URLRequest):
+    return testing_url(request_data.test_url)
+
+def domain_hyphen_check(extracted_url, current_score: int):
     if extracted_url.domain.count("-") > 2:
         return current_score+10
     return current_score
 
-def tlds_check(extracted_url: str, current_score: int):
+def tlds_check(extracted_url, current_score: int):
     suffix = extracted_url.suffix
     for extensions in CHEAP_EXTENSIONS:
         if suffix == extensions:
             return current_score + 15
-        return current_score
+    return current_score
 
 def ip_address_check(test_url: str, current_score: int):
     hostname = urlparse(test_url).hostname
@@ -51,14 +64,16 @@ def ip_address_check(test_url: str, current_score: int):
         return current_score
 
 
-def homoglyph_check(extracted_url: str, current_score: int):
+def homoglyph_check(extracted_url, current_score: int):
     safe_domain = extracted_url.domain.encode('idna').decode('utf-8')
     if safe_domain.startswith("xn--"):
         return current_score+50
     return current_score
 
-def typosquatting_check(extracted_url: str, current_score: int):
+def typosquatting_check(extracted_url, current_score: int):
     for domain_name in HIGH_VALUE_TARGETS:
+        if extracted_url.domain == domain_name:
+            continue
         raw_distance = Levenshtein.distance(extracted_url.domain, domain_name)
         max_len = max(len(extracted_url.domain), len(domain_name))
 
@@ -67,7 +82,7 @@ def typosquatting_check(extracted_url: str, current_score: int):
         if normalized_distance < 0.22:
             print(f"Typo_squatting: '{extracted_url.domain}' mimics '{domain_name}' (NLD : {normalized_distance:.2f})")
             return current_score + 35
-        return current_score
+    return current_score
 
 def subdomain_spoofing(current_score: int, domain: str, sub_domain: str):
     word_list = sub_domain.replace("-", ".").split(".")
@@ -82,19 +97,19 @@ def subdomain_spoofing(current_score: int, domain: str, sub_domain: str):
                 return current_score+30
     return current_score
 
-def protocol(parsed_url: str, current_score: int):
+def protocol(parsed_url, current_score: int):
     if parsed_url.scheme == "http":
         return current_score+10
     return current_score
 
-def symbol_obfuscation(test_url: str, current_score: int):
+def symbol_obfuscation(test_url, current_score: int):
     if "@" in test_url:
         return current_score+50
     return current_score
 
 
 
-def testing_url(test_url: str):
+def testing_url(test_url):
     extracted_url = tldextract.extract(test_url)
     parsed_url = urlparse(test_url)
     domain = extracted_url.domain
@@ -110,6 +125,4 @@ def testing_url(test_url: str):
     risk_score = protocol(parsed_url, risk_score)
     risk_score = symbol_obfuscation(test_url, risk_score)
 
-    print(risk_score)
-
-testing_url(test_url)
+    return risk_score
