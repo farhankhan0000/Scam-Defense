@@ -6,14 +6,6 @@ import ipaddress
 
 
 test_url = "https://secure-account-verification-update-now.com/login"
-extracted_url = tldextract.extract(test_url)
-parsed_url = urlparse(test_url)
-domain = extracted_url.domain
-sub_domain = extracted_url.subdomain
-
-print(extracted_url.domain)
-
-risk_score = 0
 
 
 CHEAP_EXTENSIONS = ["xyz", "top", "tk", "ml", "pw"]
@@ -102,29 +94,22 @@ def symbol_obfuscation(test_url: str, current_score: int):
 
 
 
-def testing_url():
-    if not symbol_obfuscation():
-        print("the url is ignoring the given domain and treating it as a subdomain")
+def testing_url(test_url: str):
+    extracted_url = tldextract.extract(test_url)
+    parsed_url = urlparse(test_url)
+    domain = extracted_url.domain
+    sub_domain = extracted_url.subdomain
+    risk_score = 0
 
-    if not protocol():
-        print("the url is not legitimate")
+    risk_score = domain_hyphen_check(extracted_url, risk_score)
+    risk_score = tlds_check(extracted_url, risk_score)
+    risk_score = ip_address_check(test_url, risk_score)
+    risk_score = homoglyph_check(extracted_url, risk_score)
+    risk_score = typosquatting_check(extracted_url, risk_score)
+    risk_score = subdomain_spoofing(risk_score, domain, sub_domain)
+    risk_score = protocol(parsed_url, risk_score)
+    risk_score = symbol_obfuscation(test_url, risk_score)
 
-    if not subdomain_spoofing():
-        print("the url is scam")
+    print(risk_score)
 
-    if not homoglyph_check():
-        print("the url is not using standard english")
-
-    if not typosquatting_check():
-        print("the url is fake one")
-
-    if not ip_address_check(test_url):
-        print("the url has raw ip address therefore its a scam")
-
-    if not tlds_check(extracted_url):
-        print("the url is a cheap one so its a scam")
-
-    if not domain_hyphen_check(extracted_url):
-        print("the domain contains alot of hyphen so its a scam")
-
-testing_url()
+testing_url(test_url)
