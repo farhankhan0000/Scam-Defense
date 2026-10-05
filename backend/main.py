@@ -8,7 +8,10 @@ import ipaddress
 test_url = "https://secure-account-verification-update-now.com/login"
 extracted_url = tldextract.extract(test_url)
 parsed_url = urlparse(test_url)
+domain = extracted_url.domain
+sub_domain = extracted_url.subdomain
 
+print(extracted_url.domain)
 
 risk_score = 0
 
@@ -31,16 +34,15 @@ HIGH_VALUE_TARGETS = [
 
 def domain_hyphen_check(extracted_url: str, current_score: int):
     if extracted_url.domain.count("-") > 2:
-        return False
-    return True
+        return current_score+10
+    return current_score
 
 def tlds_check(extracted_url: str, current_score: int):
     suffix = extracted_url.suffix
     for extensions in CHEAP_EXTENSIONS:
         if suffix == extensions:
-            return False
-
-    return True
+            return current_score + 15
+        return current_score
 
 def ip_address_check(test_url: str, current_score: int):
     hostname = urlparse(test_url).hostname
@@ -57,13 +59,13 @@ def ip_address_check(test_url: str, current_score: int):
         return current_score
 
 
-def homoglyph_check(current_score: int):
+def homoglyph_check(extracted_url: str, current_score: int):
     safe_domain = extracted_url.domain.encode('idna').decode('utf-8')
     if safe_domain.startswith("xn--"):
         return current_score+50
     return current_score
 
-def typosquatting_check(current_score: int):
+def typosquatting_check(extracted_url: str, current_score: int):
     for domain_name in HIGH_VALUE_TARGETS:
         raw_distance = Levenshtein.distance(extracted_url.domain, domain_name)
         max_len = max(len(extracted_url.domain), len(domain_name))
@@ -75,18 +77,25 @@ def typosquatting_check(current_score: int):
             return current_score + 35
         return current_score
 
-def subdomain_spoofing(current_score: int):
+def subdomain_spoofing(current_score: int, domain: str, sub_domain: str):
+    word_list = sub_domain.replace("-", ".").split(".")
     for brands_domain in HIGH_VALUE_TARGETS:
-        if brands_domain in extracted_url.subdomain:
-            return False
-    return True
+        if brands_domain == domain:
+            continue
 
-def protocol(current_score: int):
+
+        for word in word_list:
+            if brands_domain == word:
+                print(f" Subdomain spoofing: '{brands_domain}' found in subdomain.")
+                return current_score+30
+    return current_score
+
+def protocol(parsed_url: str, current_score: int):
     if parsed_url.scheme == "http":
-        return False
-    return True
+        return current_score+10
+    return current_score
 
-def symbol_obfuscation(current_score: int):
+def symbol_obfuscation(test_url: str, current_score: int):
     if "@" in test_url:
         return current_score+50
     return current_score
