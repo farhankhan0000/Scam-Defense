@@ -1,9 +1,12 @@
 from sqlalchemy import create_engine, text
 from sqlalchemy.orm import sessionmaker, declarative_base
 import os
+from pathlib import Path
 from dotenv import load_dotenv
 
-load_dotenv()
+BASE_DIR = Path(__file__).resolve().parent.parent
+
+load_dotenv(BASE_DIR / ".env")
 
 DB_USER = os.getenv("POSTGRES_USER")
 DB_PASSWORD = os.getenv("POSTGRES_PASSWORD")
@@ -17,4 +20,17 @@ engine = create_engine(SQLALCHEMY_DATABASE_URL)
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
+
+def test_connection():
+    try:
+        with engine.connect() as connection:
+            result = connection.execute(text("SELECT current_database();"))
+            print(f"Successfully connected to: {result.scalar()}")
+
+    except Exception as e:
+        print(f"Connection failed: {e}")
+
+
+if __name__ == "__main__":
+    test_connection()
 
