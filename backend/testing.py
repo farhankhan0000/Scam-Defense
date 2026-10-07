@@ -69,7 +69,7 @@ def ip_address_check(test_url: str, current_score: int):
 
         if ip_object.is_loopback:
             return current_score
-
+        print(f"Ip Address is given instead of Domain/Subdomain: {hostname}")
         return current_score+45
 
     except ValueError:
@@ -79,6 +79,7 @@ def ip_address_check(test_url: str, current_score: int):
 def homoglyph_check(extracted_url, current_score: int):
     safe_domain = extracted_url.domain.encode('idna').decode('utf-8')
     if safe_domain.startswith("xn--"):
+        print("Using Foreign Alphabet Characters mimicing English Character")
         return current_score+50
     return current_score
 
@@ -111,11 +112,13 @@ def subdomain_spoofing(current_score: int, domain: str, sub_domain: str):
 
 def protocol(parsed_url, current_score: int):
     if parsed_url.scheme == "http":
+        print(f"Using http as Protocol")
         return current_score+10
     return current_score
 
 def symbol_obfuscation(test_url, current_score: int):
     if "@" in test_url:
+        print(f"Using @ inside the URL trying to hide the data")
         return current_score+50
     return current_score
 
@@ -128,6 +131,7 @@ def testing_url(test_url):
     sub_domain = extracted_url.subdomain
     risk_score = 0
 
+    risk_score = sub_domain_period_check(sub_domain, risk_score)
     risk_score = domain_hyphen_check(extracted_url, risk_score)
     risk_score = tlds_check(extracted_url, risk_score)
     risk_score = ip_address_check(test_url, risk_score)
