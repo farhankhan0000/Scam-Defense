@@ -7,6 +7,7 @@ class ScanHistory(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     target_url = Column(String, nullable=False, unique=True, index=True)
+    scraped_content = Column(String, nullable=True)
 
     risk_score = Column(Float, nullable=True)
     ai_summary = Column(String, nullable=False)
