@@ -1,23 +1,8 @@
-from fastapi import APIRouter, Depends
-from pydantic import BaseModel
 import ipaddress
 import tldextract
 import Levenshtein
 from urllib.parse import urlparse
-from database import get_db
-from sqlalchemy.orm import Session
 
-router = APIRouter(
-    prefix="/scam",
-    tags=["Scam detector"]
-)
-
-class URLRequest(BaseModel):
-    test_url: str
-
-@router.post("/")
-def get_risk_score(request_data: URLRequest):
-    return testing_url(request_data.test_url)
 
 
 
@@ -165,5 +150,8 @@ def testing_url(test_url):
 
     risk_score = min(risk_score, 100)
 
-    return risk_score
+    return {
+        "final_score" : risk_score,
+        "threat_reasons" : detected_threats
+    }
 
