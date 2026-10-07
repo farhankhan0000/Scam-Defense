@@ -1,9 +1,11 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 from pydantic import BaseModel
 import ipaddress
 import tldextract
 import Levenshtein
 from urllib.parse import urlparse
+from database import get_db
+from sqlalchemy.orm import Session
 
 router = APIRouter(
     prefix="/scam",
@@ -16,6 +18,8 @@ class URLRequest(BaseModel):
 @router.post("/")
 def get_risk_score(request_data: URLRequest):
     return testing_url(request_data.test_url)
+
+
 
 CHEAP_EXTENSIONS = ["xyz", "top", "tk", "ml", "pw"]
 

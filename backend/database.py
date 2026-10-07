@@ -34,3 +34,9 @@ def test_connection():
 if __name__ == "__main__":
     test_connection()
 
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
