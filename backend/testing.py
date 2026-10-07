@@ -42,22 +42,20 @@ HIGH_VALUE_TARGETS = [
 def domain_hyphen_check(extracted_url, current_score: int):
     hyphen_count = extracted_url.domain.count("-")
     if hyphen_count > 2:
-        print(f"Suspicious Hyphen Count: {hyphen_count}")
-        return current_score+10
-    return current_score
+        return current_score+10, f"Suspicious Hyphen Count: {hyphen_count}"
+    return current_score, None
 
 def sub_domain_period_check(sub_domain: str, current_score: int):
     period_count = sub_domain.count(".")
     if period_count > 2:
-        print(f"Suspicious Period Count: {period_count}")
-        return current_score+10
-    return current_score
+        return current_score+10, f"Suspicious Period Count: {period_count}"
+    return current_score, None
 
 def tlds_check(extracted_url, current_score: int):
     suffix = extracted_url.suffix
     if suffix in CHEAP_EXTENSIONS:
-        return current_score + 25
-    return current_score
+        return current_score + 25, f"Using Cheap Extensions{suffix}"
+    return current_score, None
 
 def ip_address_check(test_url: str, current_score: int):
     host_target = test_url if "//" in test_url else f"//{test_url}"
@@ -67,20 +65,19 @@ def ip_address_check(test_url: str, current_score: int):
         ip_object = ipaddress.ip_address(hostname)
 
         if ip_object.is_loopback:
-            return current_score
-        print(f"Ip Address is given instead of Domain/Subdomain: {hostname}")
-        return current_score+45
+            return current_score, None
+
+        return current_score+45, f"Ip Address is given instead of Domain/Subdomain: {hostname}"
 
     except ValueError:
-        return current_score
+        return current_score, None
 
 
 def homoglyph_check(extracted_url, current_score: int):
     safe_fqdn = extracted_url.fqdn.encode('idna').decode('utf-8')
     if "xn--" in safe_fqdn:
-        print("Using Foreign Alphabet Characters mimicking English Character")
-        return current_score+65
-    return current_score
+        return current_score+65, "Using Foreign Alphabet Characters mimicking English Character"
+    return current_score, None
 
 def typosquatting_check(extracted_url, current_score: int):
     for domain_name in HIGH_VALUE_TARGETS:
@@ -90,14 +87,13 @@ def typosquatting_check(extracted_url, current_score: int):
         max_len = max(len(extracted_url.domain), len(domain_name))
 
         if max_len == 0:
-            return current_score
+            return current_score, None
 
         normalized_distance = raw_distance/max_len
 
         if normalized_distance < 0.22:
-            print(f"Typo_squatting: '{extracted_url.domain}' mimics '{domain_name}' (NLD : {normalized_distance:.2f})")
-            return current_score + 45
-    return current_score
+            return current_score + 45, f"Typo_squatting: '{extracted_url.domain}' mimics '{domain_name}' (NLD : {normalized_distance:.2f})"
+    return current_score, None
 
 def subdomain_spoofing(current_score: int, domain: str, sub_domain: str):
     word_list = sub_domain.replace("-", ".").split(".")
@@ -108,22 +104,19 @@ def subdomain_spoofing(current_score: int, domain: str, sub_domain: str):
 
         for word in word_list:
             if brands_domain == word:
-                print(f" Subdomain spoofing: '{brands_domain}' found in subdomain.")
-                return current_score+30
-    return current_score
+                return current_score+30, f" Subdomain spoofing: '{brands_domain}' found in subdomain."
+    return current_score, None
 
 def protocol(test_url, current_score: int):
     parsed_url = urlparse(test_url)
     if parsed_url.scheme == "http":
-        print(f"Using http as Protocol")
-        return current_score+10
-    return current_score
+        return current_score+10, f"Using http as Protocol"
+    return current_score, None
 
 def symbol_obfuscation(test_url, current_score: int):
     if "@" in test_url:
-        print(f"Using @ inside the URL trying to hide the data")
-        return current_score+65
-    return current_score
+        return current_score+65, f"Using @ inside the URL trying to hide the data"
+    return current_score, None
 
 
 
@@ -132,17 +125,45 @@ def testing_url(test_url):
     domain = extracted_url.domain
     sub_domain = extracted_url.subdomain
     risk_score = 0
+    detected_threats = []
 
-    risk_score = sub_domain_period_check(sub_domain, risk_score)
-    risk_score = domain_hyphen_check(extracted_url, risk_score)
-    risk_score = tlds_check(extracted_url, risk_score)
-    risk_score = ip_address_check(test_url, risk_score)
-    risk_score = homoglyph_check(extracted_url, risk_score)
-    risk_score = typosquatting_check(extracted_url, risk_score)
-    risk_score = subdomain_spoofing(risk_score, domain, sub_domain)
-    risk_score = protocol(test_url, risk_score)
-    risk_score = symbol_obfuscation(test_url, risk_score)
+    risk_score, flag = sub_domain_period_check(sub_domain, risk_score)
+    if flag:
+        detected_threats.append(flag)
+
+    risk_score, flag = domain_hyphen_check(extracted_url, risk_score)
+    if flag:
+        detected_threats.append(flag)
+
+    risk_score, flag = tlds_check(extracted_url, risk_score)
+    if flag:
+        detected_threats.append(flag)
+
+    risk_score, flag = ip_address_check(test_url, risk_score)
+    if flag:
+        detected_threats.append(flag)
+
+    risk_score, flag = homoglyph_check(extracted_url, risk_score)
+    if flag:
+        detected_threats.append(flag)
+
+    risk_score, flag = typosquatting_check(extracted_url, risk_score)
+    if flag:
+        detected_threats.append(flag)
+
+    risk_score, flag = subdomain_spoofing(risk_score, domain, sub_domain)
+    if flag:
+        detected_threats.append(flag)
+
+    risk_score, flag = protocol(test_url, risk_score)
+    if flag:
+        detected_threats.append(flag)
+
+    risk_score, flag = symbol_obfuscation(test_url, risk_score)
+    if flag:
+        detected_threats.append(flag)
 
     risk_score = min(risk_score, 100)
 
     return risk_score
+
