@@ -21,6 +21,20 @@ def health_check(db: Session=Depends(get_db)):
 class URLRequest(BaseModel):
     test_url: str
 
+
 @app.post("/scam")
 def get_risk_score(request_data: URLRequest):
-    return testing_url(request_data.test_url)
+
+    heuristic_result = testing_url(request_data.test_url)
+    base_score = heuristic_result["final_score"]
+    threats = heuristic_result["threat_reasons"]
+
+    if base_score < 25:
+        return {"status" : "Safe", "score" : base_score, "reasons" : threats}
+
+    elif base_score > 70:
+        return {"status" : "Phishing", "score" : base_score, "reasons" : threats}
+
+    else:
+        return "ai"
+
