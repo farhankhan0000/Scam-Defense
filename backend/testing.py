@@ -56,7 +56,7 @@ def sub_domain_period_check(sub_domain: str, current_score: int):
 def tlds_check(extracted_url, current_score: int):
     suffix = extracted_url.suffix
     if suffix in CHEAP_EXTENSIONS:
-        return current_score + 15
+        return current_score + 25
     return current_score
 
 def ip_address_check(test_url: str, current_score: int):
@@ -79,7 +79,7 @@ def homoglyph_check(extracted_url, current_score: int):
     safe_fqdn = extracted_url.fqdn.encode('idna').decode('utf-8')
     if "xn--" in safe_fqdn:
         print("Using Foreign Alphabet Characters mimicking English Character")
-        return current_score+50
+        return current_score+65
     return current_score
 
 def typosquatting_check(extracted_url, current_score: int):
@@ -96,7 +96,7 @@ def typosquatting_check(extracted_url, current_score: int):
 
         if normalized_distance < 0.22:
             print(f"Typo_squatting: '{extracted_url.domain}' mimics '{domain_name}' (NLD : {normalized_distance:.2f})")
-            return current_score + 35
+            return current_score + 45
     return current_score
 
 def subdomain_spoofing(current_score: int, domain: str, sub_domain: str):
@@ -122,7 +122,7 @@ def protocol(test_url, current_score: int):
 def symbol_obfuscation(test_url, current_score: int):
     if "@" in test_url:
         print(f"Using @ inside the URL trying to hide the data")
-        return current_score+50
+        return current_score+65
     return current_score
 
 
@@ -142,5 +142,7 @@ def testing_url(test_url):
     risk_score = subdomain_spoofing(risk_score, domain, sub_domain)
     risk_score = protocol(test_url, risk_score)
     risk_score = symbol_obfuscation(test_url, risk_score)
+
+    risk_score = min(risk_score, 100)
 
     return risk_score
