@@ -62,7 +62,8 @@ def tlds_check(extracted_url, current_score: int):
     return current_score
 
 def ip_address_check(test_url: str, current_score: int):
-    hostname = urlparse(test_url).hostname
+    host_target = test_url if "//" in test_url else f"//{test_url}"
+    hostname = urlparse(host_target).hostname
 
     try:
         ip_object = ipaddress.ip_address(hostname)
@@ -110,7 +111,8 @@ def subdomain_spoofing(current_score: int, domain: str, sub_domain: str):
                 return current_score+30
     return current_score
 
-def protocol(parsed_url, current_score: int):
+def protocol(test_url, current_score: int):
+    parsed_url = urlparse(test_url)
     if parsed_url.scheme == "http":
         print(f"Using http as Protocol")
         return current_score+10
@@ -126,7 +128,6 @@ def symbol_obfuscation(test_url, current_score: int):
 
 def testing_url(test_url):
     extracted_url = tldextract.extract(test_url)
-    parsed_url = urlparse(test_url)
     domain = extracted_url.domain
     sub_domain = extracted_url.subdomain
     risk_score = 0
@@ -138,7 +139,7 @@ def testing_url(test_url):
     risk_score = homoglyph_check(extracted_url, risk_score)
     risk_score = typosquatting_check(extracted_url, risk_score)
     risk_score = subdomain_spoofing(risk_score, domain, sub_domain)
-    risk_score = protocol(parsed_url, risk_score)
+    risk_score = protocol(test_url, risk_score)
     risk_score = symbol_obfuscation(test_url, risk_score)
 
     return risk_score
