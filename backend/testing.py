@@ -78,9 +78,9 @@ def ip_address_check(test_url: str, current_score: int):
 
 
 def homoglyph_check(extracted_url, current_score: int):
-    safe_domain = extracted_url.domain.encode('idna').decode('utf-8')
-    if safe_domain.startswith("xn--"):
-        print("Using Foreign Alphabet Characters mimicing English Character")
+    safe_fqdn = extracted_url.fqdn.encode('idna').decode('utf-8')
+    if "xn--" in safe_fqdn:
+        print("Using Foreign Alphabet Characters mimicking English Character")
         return current_score+50
     return current_score
 
