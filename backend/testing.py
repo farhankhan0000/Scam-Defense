@@ -55,10 +55,8 @@ def sub_domain_period_check(sub_domain: str, current_score: int):
 
 def tlds_check(extracted_url, current_score: int):
     suffix = extracted_url.suffix
-    for extensions in CHEAP_EXTENSIONS:
-        if suffix == extensions:
-            print(f"Using Cheap Extension: {suffix}")
-            return current_score + 15
+    if suffix in CHEAP_EXTENSIONS:
+        return current_score + 15
     return current_score
 
 def ip_address_check(test_url: str, current_score: int):
@@ -90,6 +88,9 @@ def typosquatting_check(extracted_url, current_score: int):
             continue
         raw_distance = Levenshtein.distance(extracted_url.domain, domain_name)
         max_len = max(len(extracted_url.domain), len(domain_name))
+
+        if max_len == 0:
+            return current_score
 
         normalized_distance = raw_distance/max_len
 
