@@ -1,4 +1,4 @@
-from backend.testing import router as scam_router
+from testing import router as scam_router
 from fastapi import FastAPI, Depends
 from database import engine, get_db
 import models

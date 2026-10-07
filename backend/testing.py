@@ -40,7 +40,16 @@ HIGH_VALUE_TARGETS = [
 
 
 def domain_hyphen_check(extracted_url, current_score: int):
-    if extracted_url.domain.count("-") > 2:
+    hyphen_count = extracted_url.domain.count("-")
+    if hyphen_count > 2:
+        print(f"Suspicious Hyphen Count: {hyphen_count}")
+        return current_score+10
+    return current_score
+
+def sub_domain_period_check(sub_domain: str, current_score: int):
+    period_count = sub_domain.count(".")
+    if period_count > 2:
+        print(f"Suspicious Period Count: {period_count}")
         return current_score+10
     return current_score
 
@@ -48,6 +57,7 @@ def tlds_check(extracted_url, current_score: int):
     suffix = extracted_url.suffix
     for extensions in CHEAP_EXTENSIONS:
         if suffix == extensions:
+            print(f"Using Cheap Extension: {suffix}")
             return current_score + 15
     return current_score
 
