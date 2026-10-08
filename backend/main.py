@@ -23,7 +23,7 @@ class URLRequest(BaseModel):
 
 
 @app.post("/scam")
-def get_risk_score(request_data: URLRequest):
+def get_url_results(request_data: URLRequest):
 
     heuristic_result = testing_url(request_data.test_url)
     base_score = heuristic_result["final_score"]
