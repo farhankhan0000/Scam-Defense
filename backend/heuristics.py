@@ -33,10 +33,10 @@ def domain_hyphen_check(extracted_url, current_score: int):
     domain_hyphen_count = extracted_url.domain.count("-")
     sub_domain_hyphen_count = extracted_url.subdomain.count("-")
     hyphen_count = domain_hyphen_count + sub_domain_hyphen_count
-    if hyphen_count > 3:
-        return current_score+15, f"Suspicious Hyphen Count: {hyphen_count}"
-    elif hyphen_count > 5:
+    if hyphen_count > 5:
         return current_score + 30, f"Suspicious Hyphen Count: {hyphen_count}"
+    elif hyphen_count > 3:
+        return current_score+15, f"Suspicious Hyphen Count: {hyphen_count}"
     return current_score, None
 
 def sub_domain_period_check(sub_domain: str, current_score: int):
@@ -57,12 +57,17 @@ def tlds_cheap_domain_check(extracted_url, current_score: int):
         return current_score + 15, f"Using Free Hosting Services{suffix}"
     return current_score, None
 
-def tlds_hiding_check(extracted_url, current_score: int):
+def tlds_hiding_check(extracted_url, current_score: int, test_url):
     suffix = extracted_url.suffix
-    for target in HIGH_VALUE_TARGETS:
-        if suffix in FREE_HOSTING_SUFFIXES and target in suffix:
-            return current_score + 45, f"Hiding behind the Free Hosting Services{suffix}, target {target}"
+    if suffix in FREE_HOSTING_SUFFIXES:
+        parsed_path = urlparse(test_url).path.lower()
+        sub_domain = extracted_url.subdomain.lower()
+
+        for target in HIGH_VALUE_TARGETS:
+            if target in parsed_path or target in sub_domain:
+                return current_score + 45, f"Target brand: {target} spoofed on free host {suffix}"
     return current_score, None
+
 
 def ip_address_check(test_url: str, current_score: int):
     host_target = test_url if "//" in test_url else f"//{test_url}"
