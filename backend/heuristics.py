@@ -175,6 +175,14 @@ def testing_url(test_url):
     if flag:
         detected_threats.append(flag)
 
+    risk_score, flag = tlds_hiding_check(extracted_url, risk_score, test_url)
+    if flag:
+        detected_threats.append(flag)
+
+    risk_score, flag = tlds_cheap_domain_check(extracted_url, risk_score)
+    if flag:
+        detected_threats.append(flag)
+
     risk_score = min(risk_score, 100)
 
     return {
