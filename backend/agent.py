@@ -14,6 +14,9 @@ class AIResponse(BaseModel):
     summary: str = Field(description="A Short, Forceful, one sentence warning explaining the heuristics threats")
 
 
+model = ChatGroq(model="gemma-4-26-b-it",
+                 temperature=0.0)
+
 
 from langchain.agents import create_agent
 
