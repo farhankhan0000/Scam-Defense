@@ -22,6 +22,11 @@ HIGH_VALUE_TARGETS = [
     "zoom", "slack", "salesforce"
 ]
 
+FREE_HOSTING_SUFFIXES = [
+    "github.io", "pages.dev", "workers.dev", "vercel.app",
+    "netlify.app", "web.app", "firebaseapp.com", "s3.amazonaws.com"
+]
+
 
 
 def domain_hyphen_check(extracted_url, current_score: int):
@@ -44,6 +49,19 @@ def tlds_check(extracted_url, current_score: int):
     suffix = extracted_url.suffix
     if suffix in CHEAP_EXTENSIONS:
         return current_score + 25, f"Using Cheap Extensions{suffix}"
+    return current_score, None
+
+def tlds_cheap_domain_check(extracted_url, current_score: int):
+    suffix = extracted_url.suffix
+    if suffix in FREE_HOSTING_SUFFIXES:
+        return current_score + 15, f"Using Free Hosting Services{suffix}"
+    return current_score, None
+
+def tlds_hiding_check(extracted_url, current_score: int):
+    suffix = extracted_url.suffix
+    for target in HIGH_VALUE_TARGETS:
+        if suffix in FREE_HOSTING_SUFFIXES and target in suffix:
+            return current_score + 45, f"Hiding behind the Free Hosting Services{suffix}, target {target}"
     return current_score, None
 
 def ip_address_check(test_url: str, current_score: int):
