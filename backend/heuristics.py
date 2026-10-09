@@ -25,9 +25,13 @@ HIGH_VALUE_TARGETS = [
 
 
 def domain_hyphen_check(extracted_url, current_score: int):
-    hyphen_count = extracted_url.domain.count("-")
-    if hyphen_count > 2:
-        return current_score+10, f"Suspicious Hyphen Count: {hyphen_count}"
+    domain_hyphen_count = extracted_url.domain.count("-")
+    sub_domain_hyphen_count = extracted_url.subdomain.count("-")
+    hyphen_count = domain_hyphen_count + sub_domain_hyphen_count
+    if hyphen_count > 3:
+        return current_score+15, f"Suspicious Hyphen Count: {hyphen_count}"
+    elif hyphen_count > 5:
+        return current_score + 30, f"Suspicious Hyphen Count: {hyphen_count}"
     return current_score, None
 
 def sub_domain_period_check(sub_domain: str, current_score: int):

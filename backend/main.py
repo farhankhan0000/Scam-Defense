@@ -36,5 +36,4 @@ def get_url_results(request_data: URLRequest):
         return {"status" : "Phishing", "score" : base_score, "reasons" : threats}
 
     else:
-        return "ai"
-
+        return {"status" : "ai", "score" : base_score, "reasons" : threats}
