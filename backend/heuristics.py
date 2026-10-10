@@ -27,6 +27,12 @@ FREE_HOSTING_SUFFIXES = [
     "netlify.app", "web.app", "firebaseapp.com", "s3.amazonaws.com"
 ]
 
+def live_database_check(test_url: str, live_db_set: set, current_score: int):
+    """0(1) Memory lookup for known threats"""
+    if live_db_set and test_url in live_db_set:
+        return current_score + 100, "URL explicitly found in live threat intelligence database"
+    return current_score
+
 
 
 def domain_hyphen_check(extracted_url, current_score: int):

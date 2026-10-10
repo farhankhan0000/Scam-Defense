@@ -4,7 +4,11 @@ from database import engine, get_db
 import models
 from sqlalchemy.orm import Session
 from heuristics import testing_url
+from contextlib import asynccontextmanager
+import httpx
 
+
+live_phishing_db = set()
 
 app = FastAPI(title="Phishing Defence API")
 
