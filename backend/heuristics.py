@@ -138,7 +138,14 @@ def symbol_obfuscation(test_url, current_score: int):
 
 
 
-def testing_url(test_url):
+def testing_url(test_url, live_fishing_db: set = None):
+    risk_score, flag = live_database_check(test_url, live_fishing_db)
+    if flag:
+        return {
+            "final_score" : risk_score,
+            "threat_reasons" : [flag]
+        }
+
     extracted_url = tldextract.extract(test_url)
     domain = extracted_url.domain
     sub_domain = extracted_url.subdomain
