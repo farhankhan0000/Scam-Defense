@@ -3,8 +3,7 @@ import tldextract
 import Levenshtein
 from urllib.parse import urlparse
 
-
-
+from click import clear
 
 CHEAP_EXTENSIONS = ["xyz", "top", "tk", "ml", "pw"]
 
@@ -29,7 +28,8 @@ FREE_HOSTING_SUFFIXES = [
 
 def live_database_check(test_url: str, live_db_set: set, current_score: int):
     """0(1) Memory lookup for known threats"""
-    if live_db_set and test_url in live_db_set:
+    clean_target = test_url.strip()
+    if live_db_set and clean_target in live_db_set:
         return current_score + 100, "URL explicitly found in live threat intelligence database"
     return current_score, None
 
@@ -52,15 +52,15 @@ def sub_domain_period_check(sub_domain: str, current_score: int):
     return current_score, None
 
 def tlds_check(extracted_url, current_score: int):
-    suffix = extracted_url.suffix
-    if suffix in CHEAP_EXTENSIONS:
-        return current_score + 25, f"Using Cheap Extensions{suffix}"
+    registered_domain = extracted_url.registered_domain
+    if registered_domain in CHEAP_EXTENSIONS:
+        return current_score + 25, f"Using Cheap Extensions{registered_domain}"
     return current_score, None
 
 def tlds_cheap_domain_check(extracted_url, current_score: int):
-    suffix = extracted_url.suffix
-    if suffix in FREE_HOSTING_SUFFIXES:
-        return current_score + 15, f"Using Free Hosting Services{suffix}"
+    registered_domain = extracted_url.registered_domain
+    if registered_domain in FREE_HOSTING_SUFFIXES:
+        return current_score + 15, f"Using Free Hosting Services{registered_domain}"
     return current_score, None
 
 def tlds_hiding_check(extracted_url, current_score: int, test_url):

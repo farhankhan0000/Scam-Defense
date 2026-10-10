@@ -21,7 +21,7 @@ async def lifespan(app: FastAPI):
             if response.status_code==200:
 
                 raw_urls = response.text.splitlines()
-                clean_urls = {url.strip for url in raw_urls if url.strip()}
+                clean_urls = {url.strip() for url in raw_urls if url.strip()}
                 live_phishing_db.update(clean_urls)
                 print(f"Loaded {len(live_phishing_db)} malicious URLs into Memory cache.")
             else:
