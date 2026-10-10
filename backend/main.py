@@ -10,6 +10,23 @@ import httpx
 
 live_phishing_db = set()
 
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    print("Fetching active thread intelligence feed...")
+    try:
+        async with httpx.AsyncClient() as client:
+            response = await client.get("https://openphish.com/feed.txt")
+
+            urls = response.text.splitlines()
+            live_phishing_db.update(urls)
+            print(f"Loaded {len(live_phishing_db)} malicious URLs into Memory cache.")
+    except Exception as e:
+        print(f"Failed to load threat field: {e}")
+
+    yield
+
+    live_phishing_db.clear()
+
 app = FastAPI(title="Phishing Defence API")
 
 models.Base.metadata.create_all(bind=engine)
