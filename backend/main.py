@@ -27,7 +27,7 @@ async def lifespan(app: FastAPI):
 
     live_phishing_db.clear()
 
-app = FastAPI(title="Phishing Defence API")
+app = FastAPI(title="Phishing Defence API", lifespan=lifespan)
 
 models.Base.metadata.create_all(bind=engine)
 
@@ -46,7 +46,7 @@ class URLRequest(BaseModel):
 @app.post("/scam")
 def get_url_results(request_data: URLRequest):
 
-    heuristic_result = testing_url(request_data.test_url)
+    heuristic_result = testing_url(request_data.test_url, live_phishing_db)
     base_score = heuristic_result["final_score"]
     threats = heuristic_result["threat_reasons"]
 
