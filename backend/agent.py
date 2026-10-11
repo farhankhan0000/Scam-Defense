@@ -18,7 +18,7 @@ class AIResponse(BaseModel):
     summary: str = Field(description="A Short, Forceful, one sentence warning explaining the heuristics threats")
 
 
-model = ChatGroq(model="gemma-4-26-b-it",
+model = ChatGroq(model="gemma2-9b-it",
                  temperature=0.0)
 
 
@@ -35,7 +35,7 @@ if Score is greater than 70 then flag it as threatening if It is below 25 then f
 you have to make the previous score of heuristics below 25 or above 70 depending on your analysis and 
 You are not to ask any follow up questions only return required Results."""
 
-agent = create_agent(model="google_genai:gemini-2.5-flash",
+agent = create_agent(model=ChatGroq,
                      system_prompt=system_prompt)
 
 
