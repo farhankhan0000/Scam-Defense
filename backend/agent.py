@@ -1,5 +1,10 @@
+from langchain.tools import tool, ToolRuntime
+from langgraph.types import Command
 from dotenv import load_dotenv
 from pathlib import Path
+
+from langchain_core import messages
+from langchain_core.messages import HumanMessage
 from pydantic import BaseModel,Field
 from langchain_groq import ChatGroq
 from langchain_core.prompts import ChatPromptTemplate
@@ -18,6 +23,8 @@ model = ChatGroq(model="gemma-4-26-b-it",
                  temperature=0.0)
 
 
+
+
 from langchain.agents import create_agent
 
 system_prompt = """You are a Phishing and Scam Defender of a Web Browser.
@@ -31,3 +38,7 @@ You are not to ask any follow up questions only return required Results."""
 
 agent = create_agent(model="google_genai:gemini-2.5-flash",
                      system_prompt=system_prompt)
+
+
+def calling_agent(detection_info: str):
+    agent.invoke(messages= HumanMessage(content=detection_info))

@@ -63,4 +63,5 @@ def get_url_results(request_data: URLRequest):
         return {"status" : "Phishing", "score" : base_score, "reasons" : threats}
 
     else:
-        return {"status" : "ai", "score" : base_score, "reasons" : threats}
+        detection_info = f"score: {base_score} , reasons: {threats}"
+        return detection_info
