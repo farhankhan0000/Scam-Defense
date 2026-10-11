@@ -2,7 +2,6 @@ from langchain.tools import tool, ToolRuntime
 from langgraph.types import Command
 from dotenv import load_dotenv
 from pathlib import Path
-
 from langchain_core import messages
 from langchain_core.messages import HumanMessage
 from pydantic import BaseModel,Field
@@ -41,4 +40,5 @@ agent = create_agent(model="google_genai:gemini-2.5-flash",
 
 
 def calling_agent(detection_info: str):
-    agent.invoke(messages= HumanMessage(content=detection_info))
+    response = agent.invoke(messages= HumanMessage(content=detection_info))
+    return response

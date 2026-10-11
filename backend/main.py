@@ -7,6 +7,7 @@ from sqlalchemy.orm import Session
 from heuristics import testing_url
 from contextlib import asynccontextmanager
 import httpx
+from agent import calling_agent
 
 
 live_phishing_db = set()
@@ -64,4 +65,4 @@ def get_url_results(request_data: URLRequest):
 
     else:
         detection_info = f"score: {base_score} , reasons: {threats}"
-        return detection_info
+        return calling_agent(detection_info)
