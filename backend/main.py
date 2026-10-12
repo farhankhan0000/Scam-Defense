@@ -8,6 +8,7 @@ from heuristics import testing_url
 from contextlib import asynccontextmanager
 import httpx
 from agent import calling_agent
+import traceback
 
 
 live_phishing_db = set()
@@ -53,16 +54,22 @@ class URLRequest(BaseModel):
 @app.post("/scam")
 def get_url_results(request_data: URLRequest):
 
-    heuristic_result = testing_url(request_data.test_url, live_phishing_db)
-    base_score = heuristic_result["final_score"]
-    threats = heuristic_result["threat_reasons"]
+    try:
+        heuristic_result = testing_url(request_data.test_url, live_phishing_db)
+        base_score = heuristic_result["final_score"]
+        threats = heuristic_result["threat_reasons"]
 
-    if base_score < 25:
-        return {"status" : "Safe", "score" : base_score, "reasons" : threats}
+        if base_score < 25:
+            return {"status" : "Safe", "score" : base_score, "reasons" : threats}
 
-    elif base_score > 70:
-        return {"status" : "Phishing", "score" : base_score, "reasons" : threats}
+        elif base_score > 70:
+            return {"status" : "Phishing", "score" : base_score, "reasons" : threats}
 
-    else:
-        detection_info = f"score: {base_score} , reasons: {threats}"
-        return calling_agent(detection_info)
+        else:
+            detection_info = f"URL : {request_data.test_url} , score: {base_score} , reasons: {threats}"
+            return calling_agent(detection_info)
+
+    except Exception as e:
+        error_details = traceback.format_exc()
+
+        return {"Crash report" : str(e), "Traceback" : error_details}
