@@ -35,10 +35,11 @@ if Score is greater than 70 then flag it as threatening if It is below 25 then f
 you have to make the previous score of heuristics below 25 or above 70 depending on your analysis and 
 You are not to ask any follow up questions only return required Results."""
 
-agent = create_agent(model=ChatGroq,
-                     system_prompt=system_prompt)
+agent = create_agent(model=model,
+                     system_prompt=system_prompt,
+                     response_format=AIResponse)
 
 
 def calling_agent(detection_info: str):
-    response = agent.invoke(messages= HumanMessage(content=detection_info))
-    return response
+    response = agent.invoke({"messages" : HumanMessage(content=detection_info)})
+    return response["messages"][-1].content
