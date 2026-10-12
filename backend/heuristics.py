@@ -56,7 +56,7 @@ def domain_age_check(extracted_url, current_score: int):
 
             for brand in HIGH_VALUE_TARGETS:
                 if brand in domain.lower():
-                    return current_score+45, f"Suspiciously new domain ({age_days} old mimicking brand: {brand})"
+                    return current_score+85, f"Suspiciously new domain ({age_days} days old mimicking brand: {brand})"
             return current_score+15, f"Domain is very new ({age_days} days old)"
     except Exception:
         return current_score+20, "Domain details are hidden or unreachable"
