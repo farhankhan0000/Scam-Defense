@@ -18,7 +18,7 @@ class AIResponse(BaseModel):
     summary: str = Field(description="A Short, Forceful, one sentence warning explaining the heuristics threats")
 
 
-model = ChatGroq(model="gemma2-9b-it",
+model = ChatGroq(model="llama-3.3-70b-versatile",
                  temperature=0.0)
 
 

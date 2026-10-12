@@ -2,8 +2,9 @@ import ipaddress
 import tldextract
 import Levenshtein
 from urllib.parse import urlparse
-
+from datetime import datetime
 from click import clear
+import whois
 
 CHEAP_EXTENSIONS = ["xyz", "top", "tk", "ml", "pw"]
 
@@ -33,6 +34,34 @@ def live_database_check(test_url: str, live_db_set: set, current_score: int):
         return current_score + 100, "URL explicitly found in live threat intelligence database"
     return current_score, None
 
+def domain_age_check(extracted_url, current_score: int):
+    domain = extracted_url.domain
+
+    if not domain:
+        return current_score,None
+
+    try:
+        domain_info = whois.whois(domain)
+        creation_date = domain_info.creation_date
+
+        if not creation_date:
+            return current_score, None
+
+        if isinstance(creation_date, list):
+            creation_date=creation_date[0]
+
+        age_days = (datetime.now() - creation_date).days
+
+        if age_days < 30:
+
+            for brand in HIGH_VALUE_TARGETS:
+                if brand in domain.lower():
+                    return current_score+45, f"Suspiciously new domain ({age_days} old mimicking brand: {brand})"
+            return current_score+15, f"Domain is very new ({age_days} days old)"
+    except Exception:
+        return current_score+20, "Domain details are hidden or unreachable"
+
+    return current_score,None
 
 
 def domain_hyphen_check(extracted_url, current_score: int):
