@@ -7,10 +7,22 @@ from langchain_core.messages import HumanMessage
 from pydantic import BaseModel,Field
 from langchain_groq import ChatGroq
 from langchain_core.prompts import ChatPromptTemplate
+from tavily import TavilyClient
+from dotenv import load_dotenv
+import os
+
+tavily_client = TavilyClient(api_key=os.getenv("TAVILY_API_KEY"))
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 load_dotenv(BASE_DIR / ".env")
+
+@tool
+def verify_brand_domain(brand_name: str):
+    """
+    Get the legitimate URL Domain, Subdomain, Name, Suffix for the given URL
+    """
+    search_result = tavily_client.
 
 class AIResponse(BaseModel):
     status: str = Field(description="Must be exactly 'Safe' or 'Phishing' ")
