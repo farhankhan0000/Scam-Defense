@@ -37,7 +37,7 @@ def verify_brand_domain(brand_name: str):
 
     return final_text_output
 
-
+tools = [verify_brand_domain]
 
 class AIResponse(BaseModel):
     status: str = Field(description="Must be exactly 'Safe' or 'Phishing' ")
@@ -64,9 +64,11 @@ You are not to ask any follow up questions only return required Results."""
 
 agent = create_agent(model=model,
                      system_prompt=system_prompt,
-                     response_format=AIResponse)
+                     response_format=AIResponse,
+                     tools=tools)
 
 
 def calling_agent(detection_info: str):
     response = agent.invoke({"messages" : HumanMessage(content=detection_info)})
     return response["messages"][-1].content
+
