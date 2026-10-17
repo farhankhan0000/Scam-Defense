@@ -9,6 +9,8 @@ from contextlib import asynccontextmanager
 import httpx
 from agent import calling_agent
 import traceback
+import tldextract
+from urllib.parse import urlparse
 
 
 live_phishing_db = set()
@@ -66,7 +68,12 @@ def get_url_results(request_data: URLRequest):
             return {"status" : "Phishing", "score" : base_score, "reasons" : threats}
 
         else:
-            detection_info = f"URL : {request_data.test_url} , score: {base_score} , reasons: {threats}"
+            detection_info = (f"URL : {request_data.test_url} ,"
+                              f"Registered Root Domain: {tldextract.extract(request_data.test_url).domain},"
+                              f"Subdomain: {tldextract.extract(request_data.test_url).subdomain},"
+                              f"Path: {urlparse(request_data.test_url).path}"
+                              f"score: {base_score} ,"
+                              f" reasons: {threats}")
             return calling_agent(detection_info)
 
     except Exception as e:
