@@ -77,6 +77,13 @@ def domain_age_check(extracted_url, current_score: int):
 
     return current_score,None
 
+def brand_in_domain_check(extracted_url, current_score: int):
+    domain = extracted_url.domain.lower()
+    for brand in HIGH_VALUE_TARGETS:
+        if brand in domain and brand != domain:
+            return current_score + 35, f"Brand {brand} embedded in domain name:  '{domain}'"
+    return current_score, None
+
 
 def domain_hyphen_check(extracted_url, current_score: int):
     domain_hyphen_count = extracted_url.domain.count("-")
@@ -236,6 +243,10 @@ def testing_url(test_url, live_fishing_db: set = None):
         detected_threats.append(flag)
 
     risk_score, flag = tlds_cheap_domain_check(extracted_url, risk_score)
+    if flag:
+        detected_threats.append(flag)
+
+    risk_score, flag = brand_in_domain_check(extracted_url, risk_score)
     if flag:
         detected_threats.append(flag)
 
