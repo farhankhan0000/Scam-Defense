@@ -6,27 +6,41 @@ from datetime import datetime
 from click import clear
 import whois
 
-CHEAP_EXTENSIONS = ["xyz", "top", "tk", "ml", "pw"]
+CHEAP_EXTENSIONS = {
+    "xyz", "top", "tk", "ml", "pw", "click", "work", "men", "cam",
+    "icu", "cyou", "buzz", "sbs", "shop", "vip", "live", "cfd", "monster",
+    "cc", "ru", "cn", "li", "dev"
+}
 
-
-HIGH_VALUE_TARGETS = [
-    "microsoft", "google", "apple", "adobe", "dropbox",
-    "docusign", "we-transfer", "rackspace", "godaddy", "cisco",
+HIGH_VALUE_TARGETS = {
+    "microsoft", "google", "apple", "adobe", "dropbox", "cisco",
     "linkedin", "facebook", "instagram", "whatsapp", "twitter",
-    "discord", "telegram", "snapchat",
-    "amazon", "walmart", "ebay", "alibaba", "target",
-    "homedepot", "craigslist" ,"dhl", "fedex", "ups", "usps", "royalmail",
+    "discord", "telegram", "snapchat", "netflix", "spotify", "roblox", "steam",
+
     "paypal", "chase", "wellsfargo", "bankofamerica", "citibank",
     "stripe", "square", "cashapp", "venmo", "americanexpress",
-    "netflix", "spotify", "roblox", "steam", "disney","booking", "airbnb", "uber", "lyft",
-    "zoom", "slack", "salesforce"
-]
+    "barclays", "hsbc", "lloyds", "santander", "revolut", "wise",
 
-FREE_HOSTING_SUFFIXES = [
+    "binance", "coinbase", "metamask", "kraken", "trustwallet",
+    "phantom", "ledger", "trezor", "opensea", "kucoin",
+
+    "amazon", "walmart", "ebay", "alibaba", "target", "homedepot", "craigslist",
+    "dhl", "fedex", "ups", "usps", "royalmail", "dpd", "evri",
+
+    "docusign", "salesforce", "mcafee", "zoom", "slack", "github", "gitlab",
+    "office365", "sharepoint", "onedrive", "outlook", "icloud",
+
+    "booking", "airbnb", "uber", "lyft"
+}
+
+
+FREE_HOSTING_SUFFIXES = {
     "github.io", "pages.dev", "workers.dev", "vercel.app",
-    "netlify.app", "web.app", "firebaseapp.com", "s3.amazonaws.com"
-]
-
+    "netlify.app", "web.app", "firebaseapp.com", "s3.amazonaws.com",
+    "gitlab.io", "surge.sh", "render.com", "onrender.com", "fly.dev",
+    "glitch.me", "replit.app", "webflow.io", "wixsite.com", "weebly.com",
+    "carrd.co", "typedream.app", "framer.ai", "gitbook.io", "backblazeb2.com"
+}
 def live_database_check(test_url: str, live_db_set: set, current_score: int):
     """0(1) Memory lookup for known threats"""
     clean_target = test_url.strip()
