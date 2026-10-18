@@ -71,6 +71,14 @@ or service (e.g., 'paypal', 'trustwallet', 'amazon') in its domain, subdomain, o
 candidate's 'Registered Root Domain'.
 
 Scoring Rules:
+If Status is Phishing the score must be an Integer Between 71 and 100. If Status is Safe the score must be an Integer
+Between (0 and 24).
+- Generic Credential Harvesting: If a subdomain or path contains sensitive terms 
+('billing', 'secure', 'login', 'verify', 'update', 'account') hosted on free cloud tiers 
+(e.g., vercel.app, github.io, pages.dev) or insecure HTTP, flag as Phishing (>75 score) even if no specific 
+brand is named. Legitimate payment gateways and billing portals never operate on free public developer subdomains 
+over HTTP.
+
 -Phishing (>70 Score):
 a) Brand Impersonation: The tool confirms the Candidate's root domain does not match the Official Brand's Root Domain
 b) Generic Scam: The URL exhibits high-risk credential harvesting patterns on untrusted infrastructure,

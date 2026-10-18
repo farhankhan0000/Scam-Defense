@@ -81,9 +81,9 @@ def sub_domain_period_check(sub_domain: str, current_score: int):
     return current_score, None
 
 def tlds_check(extracted_url, current_score: int):
-    registered_domain = extracted_url.registered_domain
-    if registered_domain in CHEAP_EXTENSIONS:
-        return current_score + 25, f"Using Cheap Extensions{registered_domain}"
+    suffix = extracted_url.suffix
+    if suffix in CHEAP_EXTENSIONS:
+        return current_score + 25, f"Using Cheap Extensions{suffix}"
     return current_score, None
 
 def tlds_cheap_domain_check(extracted_url, current_score: int):
