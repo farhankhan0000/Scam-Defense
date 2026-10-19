@@ -72,3 +72,10 @@ body{
     transition: 0.3s ease;
 }
 
+input:checked + .slidebar{
+    background-color: #10b981;
+}
+
+input:checked + .slidebar:before{
+    transform: translateX(22px);
+}
