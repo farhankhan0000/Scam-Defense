@@ -1,0 +1,24 @@
+*{
+    margin: 0;
+    padding: 0;
+}
+
+body{
+    width: 320px;
+    font-family: Arial, sans-serif;
+    background-color: #7DA0CA;
+}
+
+.container{
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    background-color: #052069;
+}
+
+.title{
+    font-size: 20px;
+    text-align: center;
+    color: #C1E8FF;
+}
