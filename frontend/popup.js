@@ -4,7 +4,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const toggleButton = document.getElementById('protection-toggle');
 
     browserAPI.storage.local.get(['isProtectionOn'], (result) => {
-        if (result.isProtectionOn !== 'undefined'){
+        if (result.isProtectionOn !== undefined){
             toggleButton.checked = result.isProtectionOn;
         }else{
             toggleButton.checked = true;
