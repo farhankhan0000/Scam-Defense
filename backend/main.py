@@ -1,4 +1,3 @@
-from click import clear
 from pydantic import BaseModel
 from fastapi import FastAPI, Depends
 from database import engine, get_db

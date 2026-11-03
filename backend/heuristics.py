@@ -3,7 +3,6 @@ import tldextract
 import Levenshtein
 from urllib.parse import urlparse
 from datetime import datetime
-from click import clear
 import whois
 
 CHEAP_EXTENSIONS = {
