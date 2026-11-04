@@ -249,6 +249,10 @@ def testing_url(test_url, live_fishing_db: set = None):
     if flag:
         detected_threats.append(flag)
 
+    risk_score, flag = domain_age_check(extracted_url, risk_score)
+    if flag:
+        detected_threats.append(flag)
+
     risk_score = min(risk_score, 100)
 
     return {
