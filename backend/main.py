@@ -79,3 +79,6 @@ def get_url_results(request_data: URLRequest):
         error_details = traceback.format_exc()
 
         return {"Crash report" : str(e), "Traceback" : error_details}
+
+@app.get("/text")
+def get_scraped_text()

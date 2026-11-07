@@ -5,4 +5,4 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         sendResponse({status : "Package recieved successfully"});
     }
     return true;
-})
+});
