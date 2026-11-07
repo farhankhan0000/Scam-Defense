@@ -2,19 +2,6 @@ from sqlalchemy import Column, Float, Integer, String, Boolean, DateTime
 from datetime import datetime, timezone
 from database import Base
 
-class ScanHistory(Base):
-    __tablename__ = "scan_history"
-
-    id = Column(Integer, primary_key=True, index=True)
-    target_url = Column(String, nullable=False, unique=True, index=True)
-    scraped_content = Column(String, nullable=True)
-
-    risk_score = Column(Float, nullable=True)
-    ai_summary = Column(String, nullable=False)
-    is_phishing = Column(Boolean, default=False)
-
-    scanned_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
-
 class ScrapedInfo(Base):
     __tablename__ = "scraped_text"
     id = Column(Integer, primary_key=True, index=True)
