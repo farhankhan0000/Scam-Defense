@@ -14,3 +14,9 @@ class ScanHistory(Base):
     is_phishing = Column(Boolean, default=False)
 
     scanned_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+
+class ScrapedInfo(Base):
+    __tablename__ = "scraped_text"
+    id = Column(Integer, primary_key=True, index=True)
+    url = Column(String, nullable=False, unique=True, index=True)
+    scraped_text = Column(String, nullable=True)

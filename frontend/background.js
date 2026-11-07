@@ -1,8 +1,13 @@
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     if(message.action == "retrieved_info"){
-        console.log("Background recieved URL: ", message.url);
-        console.log("Background recieved Text ", message.text);
-        sendResponse({status : "Package recieved successfully"});
+        fetch('https://127.0.0.1:8000/text', {
+            method: 'POST',
+            headers: {
+                'Content-Type' : 'application/json'
+            },
+            body: JSON.stringify({url: message.url,
+            text: message.text})
+        })
     }
     return true;
 });
