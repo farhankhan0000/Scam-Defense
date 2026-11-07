@@ -12,6 +12,7 @@ import tldextract
 from urllib.parse import urlparse
 
 
+
 live_phishing_db = set()
 
 @asynccontextmanager
@@ -51,6 +52,12 @@ def health_check(db: Session=Depends(get_db)):
 class URLRequest(BaseModel):
     test_url: str
 
+class ScrapedPayload(BaseModel):
+    url: str
+    text: str
+
+latest_scraped_data = {"url" : "no data yet", "text" : "no data yet"}
+
 
 @app.post("/scam")
 def get_url_results(request_data: URLRequest):
@@ -80,5 +87,16 @@ def get_url_results(request_data: URLRequest):
 
         return {"Crash report" : str(e), "Traceback" : error_details}
 
+@app.post("/text")
+def get_scraped_text(scraped_info: ScrapedPayload):
+    global latest_scraped_data
+    latest_scraped_data = {
+        "url" : scraped_info.url,
+        "text" : scraped_info.text
+    }
+    print(f"Success: {scraped_info.url}")
+    return {"status" : "success", "message" : "Data recieved by the backend"}
+
 @app.get("/text")
-def get_scraped_text()
+def view_scraped_text():
+    return latest_scraped_data
