@@ -10,6 +10,7 @@ from agent import calling_agent
 import traceback
 import tldextract
 from urllib.parse import urlparse
+from fastapi.middleware.cors import CORSMiddleware
 
 
 
@@ -38,6 +39,14 @@ async def lifespan(app: FastAPI):
     live_phishing_db.clear()
 
 app = FastAPI(title="Phishing Defence API", lifespan=lifespan)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins = ["*"],
+    allow_credentials = True,
+    allow_methods = ["*"],
+    allow_headers = ["*"]
+)
 
 models.Base.metadata.create_all(bind=engine)
 
