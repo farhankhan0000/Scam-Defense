@@ -6,7 +6,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
                 'Content-Type' : 'application/json'
             },
             body: JSON.stringify({url: message.url,
-            text: message.text})
+            text: message.text, unique_links: message.links})
         })
     }
     return true;

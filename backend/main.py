@@ -64,15 +64,16 @@ class URLRequest(BaseModel):
 class ScrapedPayload(BaseModel):
     url: str
     text: str
+    unique_links: str
 
 latest_scraped_data = {"url" : "no data yet", "text" : "no data yet"}
 
 
 @app.post("/scam")
-def get_url_results(request_data: URLRequest):
+def get_url_results(scraped_data: ScrapedPayload):
 
     try:
-        heuristic_result = testing_url(request_data.test_url, live_phishing_db)
+        heuristic_result = testing_url(scraped_data.url, live_phishing_db)
         base_score = heuristic_result["final_score"]
         threats = heuristic_result["threat_reasons"]
 
@@ -83,10 +84,10 @@ def get_url_results(request_data: URLRequest):
             return {"status" : "Phishing", "score" : base_score, "reasons" : threats}
 
         else:
-            detection_info = (f"URL : {request_data.test_url} ,"
-                              f"Registered Root Domain: {tldextract.extract(request_data.test_url).domain},"
-                              f"Subdomain: {tldextract.extract(request_data.test_url).subdomain},"
-                              f"Path: {urlparse(request_data.test_url).path}"
+            detection_info = (f"URL : {scraped_data.url} ,"
+                              f"Registered Root Domain: {tldextract.extract(scraped_data.url).domain},"
+                              f"Subdomain: {tldextract.extract(scraped_data.url).subdomain},"
+                              f"Path: {urlparse(scraped_data.url).path}"
                               f"score: {base_score} ,"
                               f" reasons: {threats}")
             return calling_agent(detection_info)
@@ -96,16 +97,16 @@ def get_url_results(request_data: URLRequest):
 
         return {"Crash report" : str(e), "Traceback" : error_details}
 
-@app.post("/text")
-def get_scraped_text(scraped_info: ScrapedPayload):
-    global latest_scraped_data
-    latest_scraped_data = {
-        "url" : scraped_info.url,
-        "text" : scraped_info.text
-    }
-    print(f"Success: {scraped_info.url}")
-    return {"status" : "success", "message" : "Data recieved by the backend"}
-
-@app.get("/text")
-def view_scraped_text():
-    return latest_scraped_data
+# @app.post("/text")
+# def get_scraped_text(scraped_info: ScrapedPayload):
+#     global latest_scraped_data
+#     latest_scraped_data = {
+#         "url" : scraped_info.url,
+#         "text" : scraped_info.text
+#     }
+#     print(f"Success: {scraped_info.url}")
+#     return {"status" : "success", "message" : "Data recieved by the backend"}
+#
+# @app.get("/text")
+# def view_scraped_text():
+#     return latest_scraped_data
