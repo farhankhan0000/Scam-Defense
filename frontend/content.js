@@ -26,5 +26,9 @@ const payload = {
 }
 
 chrome.runtime.sendMessage(payload, (response) => {
-    console.log("Scam defense content script background replied with-> ", response.status);
+    if(chrome.runtime.lastError){
+        console.log("Scam defense - Messaging Error: ", chrome.runtime.lastError.message);
+    }else {
+        console.log("Scam Defense - Background replied with:", response?.status);
+    }
 });
